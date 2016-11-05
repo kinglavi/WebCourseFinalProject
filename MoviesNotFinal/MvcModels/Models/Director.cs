@@ -12,7 +12,7 @@ namespace MvcModels.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        [DisplayName("שם הסופר")]
+        [DisplayName("שם הבמאי")]
         public string FullName { get; set; }
     }
 }

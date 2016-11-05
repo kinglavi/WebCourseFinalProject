@@ -10,7 +10,7 @@ namespace MvcModels.Controllers
     public class CustomersViewModel
     {
         public int Id { get; set; }
-        public string BookName { get; set; }
+        public string MovieName { get; set; }
     }
     public class CustomerController : Controller
     {
@@ -24,43 +24,43 @@ namespace MvcModels.Controllers
             }
         }
 
-        // GET: /Customer/LoanedBooks
-        public ActionResult LoanABook(int? Id)
+        // GET: /Customer/BoughtMovies
+        public ActionResult BuyAMovie(int? Id)
         {
             using (MoviesStoreDbContext db = new MoviesStoreDbContext())
             {
-                ViewBag.WantedBookId = Id;
+                ViewBag.WantedMovieId = Id;
                 return View(db.Customers.ToList());
             }
         }
 
-        // GET: /Customer/LoanedBooks
-        public ActionResult LoanTheBook(int CustomerId, int BookId)
+        // GET: /Customer/BoughtMovies
+        public ActionResult LoanTheMovie(int CustomerId, int MovieId)
         {
             using (MoviesStoreDbContext db = new MoviesStoreDbContext())
             {
-                BookCustomerManyToMany bkcst = new BookCustomerManyToMany();
-                bkcst.CustomerId = CustomerId;
-                bkcst.BookId = BookId;
+                MovieCustomerManyToMany mvcst = new MovieCustomerManyToMany();
+                mvcst.CustomerId = CustomerId;
+                mvcst.MovieId = MovieId;
 
-                db.BooksToCustomers.Add(bkcst);
+                db.MoviesBoughtByCustomers.Add(mvcst);
                 db.SaveChanges();
 
                 return RedirectToAction("Index");
             }
         }
 
-        // GET: /Customer/LoanedBooks
-        public ActionResult LoanedBooks()
+        // GET: /Customer/BoughtMovies
+        public ActionResult BoughtMovies()
         {
             using (MoviesStoreDbContext db = new MoviesStoreDbContext())
             {
-                var manyToMany = from mtm in db.BooksToCustomers
-                                 join bk in db.Books on mtm.BookId equals bk.Id
+                var manyToMany = from mtm in db.MoviesBoughtByCustomers
+                                 join mv in db.Movies on mtm.MovieId equals mv.Id
                                  join cst in db.Customers on mtm.CustomerId equals cst.Id
-                                 select new CustomersViewModel { Id = mtm.CustomerId, BookName = bk.BookName };
+                                 select new CustomersViewModel { Id = mtm.CustomerId, MovieName = mv.MovieName };
 
-                ViewBag.BookLoanes = manyToMany.ToList();
+                ViewBag.MovieBought = manyToMany.ToList();
 
                 return View(db.Customers.ToList());
             }
@@ -81,7 +81,7 @@ namespace MvcModels.Controllers
         // Post: /Customer/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id ,FullName, LoanedBooks, Address")]Customer cstNewCustomer)
+        public ActionResult Create([Bind(Include = "Id ,FullName, BoughtMovies, Address")]Customer cstNewCustomer)
         {
             using (MoviesStoreDbContext db = new MoviesStoreDbContext())
             {
@@ -111,14 +111,14 @@ namespace MvcModels.Controllers
         // Post: /Customer/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id, FullName, LoanedBooks, Address")]Customer cstCustToEdit)
+        public ActionResult Edit([Bind(Include = "Id, FullName, BoughtMovies, Address")]Customer cstCustToEdit)
         {
             using (MoviesStoreDbContext db = new MoviesStoreDbContext())
             {
                 Customer cstCustomer = db.Customers.Find(cstCustToEdit.Id);
                 cstCustomer.Address = cstCustToEdit.Address;
                 cstCustomer.FullName = cstCustToEdit.FullName;
-                cstCustomer.LoanedBooks = cstCustToEdit.LoanedBooks;
+                cstCustomer.BoughtMovies = cstCustToEdit.BoughtMovies;
                 
                 db.SaveChanges();
 
@@ -146,7 +146,7 @@ namespace MvcModels.Controllers
         /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete([Bind(Include = "Id, FullName, LoanedBooks, Address")]Customer cstCustToDelete)
+        public ActionResult Delete([Bind(Include = "Id, FullName, BoughtMovies, Address")]Customer cstCustToDelete)
         {
             using (MoviesStoreDbContext db = new MoviesStoreDbContext())
             {

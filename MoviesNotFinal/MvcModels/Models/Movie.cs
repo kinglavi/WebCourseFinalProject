@@ -13,7 +13,7 @@ namespace MvcModels.Models
         public int Id { get; set; }
         [Required]
         [DisplayName("במאי")]
-        public string Director { get; set; }
+        public int Director { get; set; }
         [Required]
         [DisplayName("שחקנים")]
         public int Actors { get; set; }
